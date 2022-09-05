@@ -7,33 +7,38 @@ For example: when you have two instruction sets $A$ and $B$, there is an ``is\_z
 Based on the principles above, the instruction sets we designed are as shown in Table \ref{table:instruction-set}, \verb|flag| is a special register that stores the flag of \verb|overflow| or \verb|borrow|.
 \begin{table}[!ht]
     \resizebox{\textwidth}{!}{
-    \begin{tabular}{|c|c|c|c|l|c|}
+    \begin{tabular}{|c|c|c|c|c|c|}
     \hline
     \emph{Type} & \emph{Sub Type} & \emph{Instruction} & \emph{Operands} & \emph{Description} & \emph{flag} \\ \hline
-    \multirow{4}{*}{Logic} & \multirow{4}{*}{arithmetic} & ADD & r0 r1 r2 & Compute [r1] + [r2] and store the result in r0 & overflow \\ \cline{3-6}
-    & & SUB & r0 r1 r2 & Compute [r1] - [r2] and store the result in r0 & borrow \\ \cline{3-6}
-    & & MUL & r0 r1 r2 & Compute [r1] * [r2] and store the least significant bits of the result in r0 & overflow \\ \cline{3-6}
-    & & DIV & r0 r1 r2 & Compute [r1] / [r2] and store the result in r0 & [r2] = 0 \\ \hline
-    \multirow{7}{*}{Flow} & \multirow{2}{*}{jump} & JMP & r0 & Set pc to [r0] & \\ \cline{3-6}
-    & & CJMP & r0 & If flag = 1, set pc to [r0], else increment pc as usual & \\ \cline{2-6}
-    & \multirow{3}{*}{call} & \multirow{3}{*}{CALL} & \multirow{3}{*}{r0} & Call instruction is usually used to make a call from one function to another & \multirow{3}{*}{} \\
-    & & & & Set pc to [r0], and store next pc in RPR & \\
-    & & & & Update the value saved in RPR position pointed to by fp to next pc, then fp = fp + 1 & \\ \cline{2-6}
-    & ret & RET & & Update the value saved by pc to the next pc value of RPR pointed to by fp, then fp = fp - 1 & \\ \cline{2-6}
-    & end & END & & END means the program is terminated and all registers are cleared & \\ \hline
-    \multirow{2}{*}{Move} & \multirow{2}{*}{mov} & MOV & r0 r1 & Store [r1] in r0 & \\ \cline{3-6}
-    & & MOVI & r0 imm0 & Store immediate value imm0 in r0 & \\ \hline
-    \multirow{6}{*}{RAM} & \multirow{2}{*}{memory} & MLOAD & r0 r1 & Load the Word in memory begin with offset [r1] and store the Word into r0 & \\ \cline{3-6}
-    & & MSTORE & r1 r0 & Store [r0] at the start of memory where the offset is [r1] & \\ \cline{2-6}
-    & \multirow{4}{*}{storage} & \multirow{2}{*}{SLOAD} & \multirow{2}{*}{r0 r1} & Use [r1] as key, query the value of the key from storage & \\
-    & & & & (the key will be hashed and prefixed with a splice) and store it in r0 & \\ \cline{3-6}
-    & & \multirow{2}{*}{SSTORE} & \multirow{2}{*}{r1 r0} & Use [r1] as key, [r0] as value, store the key and the value into storage & \\
-    & & & & (the key will be hashed and prefixed with a splice) & \\ \hline
-    Input & input & READ & r0 & Read the external input from VM freeInput, and store one Word into r0 & \\ \hline
+     &  & ADD & r0 r1 r2 & Compute [r1] + [r2] and store the result in r0 & overflow \\ \cline{3-6} 
+     &  & SUB & r0 r1 r2 & Compute [r1] - [r2] and store the result in r0 & borrow \\ \cline{3-6} 
+     &  & MUL & r0 r1 r2 & Compute [r1] * [r2] and store the least significant bits of the result in r0 & overflow \\ \cline{3-6} 
+     &  & DIV & r0 r1 r2 & Compute quotient of [r1]/[r2] and store result in r0 & [r2]= 0 \\ \cline{3-6} 
+    \multirow{-5}{*}{Logic} & \multirow{-5}{*}{arithmetic} & MOD & r0 r1 r2 & Compute remainder of [r1] /[r2] and store result in r0 & [r2] = 0 \\ \hline
+     &  & JMP & r0 & Set pc to [r0] &  \\ \cline{3-6} 
+     & \multirow{-2}{*}{jump} & CJMP & r0 & If flag = 1, set pc to [r0], else increment pc as usual &  \\ \cline{2-6} 
+    \multirow{-3}{*}{Flow} & end & END &  & END means the program is terminated and all registers are cleared &  \\ \hline
+     & mov & MOV & r0 r1 & Store [r1] in r0 &  \\ \cline{2-6} 
+    \multirow{-2}{*}{Move} & cmov & CMOV & r0 r1 & Store [r1] in r0, if flag = 1 &  \\ \hline
+     & lt & LT & r0 r1 & \cellcolor[HTML]{F9FAFB}Less-than comparison & [r0] < r[1] \\ \cline{2-6} 
+     & gt & GT & r0 r1 & Greater-than comparison & [r0] > r[1] \\ \cline{2-6} 
+    \multirow{-3}{*}{Compare} & eq & EQ & r0 r1 & \cellcolor[HTML]{F9FAFB}Equality comparison & r[0] = r[1] \\ \hline
+     & shl & SHL & r0 r1 r2 & shift [r1] by [r2] bits to the left and store result in r0 &  \\ \cline{2-6} 
+    \multirow{-2}{*}{Shfit} & shr & SHR & r0 r1 r2 & shift [r1] by [r2] bits to the right and store result in r0 &  \\ \hline
+     & not & NOT & r0 r1 & Compute bitwise NOT of [r1] and store result in r0 &  \\ \cline{2-6} 
+     & xor & XOR & r0 r1 r2 & Compute bitwise XOR of [r1] and [r2] and store result in r0 &  \\ \cline{2-6} 
+     & and & AND & r0 r1 r2 & Compute bitwise AND of [r1] and [r2] and store result in r0 &  \\ \cline{2-6} 
+    \multirow{-4}{*}{Bit} & or & OR & r0 r1 r2 & Compute bitwise OR of [r1] and [r2] and store result in r0 &  \\ \hline
+     &  & MLOAD & r0 r1 & Load the Word in memory begin with start index is [r1] and store the Word into r0 &  \\ \cline{3-6} 
+     & \multirow{-2}{*}{memory} & MSTORE & r1 r0 & Store [r0] at the start of memory where the start index is [r1] &  \\ \cline{2-6} 
+     &  & SLOAD & r0 r1 & \begin{tabular}[c]{@{}c@{}}Use [r1] as key, query the value of the key from storage\\ (the key will be hashed and prefixed with a splice) and store it in r0\end{tabular} &  \\ \cline{3-6} 
+    \multirow{-4}{*}{RAM} & \multirow{-2}{*}{storage} & SSTORE & r1 r0 & \begin{tabular}[c]{@{}c@{}}Use [r1] as key, [r0] as value, store the key and the value into storage\\ (the key will be hashed and prefixed with a splice)\end{tabular} &  \\ \hline
+    Input & input & READ & r0 & Read the external input from VM freeInput, and store one Word into r0 &  \\ \hline
     \end{tabular}
     }
     \caption{Instruction set}
     \label{table:instruction-set}
-\end{table}
+    \end{table}
+
 
 \emph{Note:} We haven't designed comparison instructions because comparison operations can be implemented directly through multiple Range Checks based on the particular design and parameter selection of OlaVM. Specific principles of this will be introduced in later sections.
