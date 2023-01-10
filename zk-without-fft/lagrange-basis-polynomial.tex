@@ -16,11 +16,11 @@ $1,x,\ldots,x^{n-1}$ is a basis of the vector space, and the coordinate $a_i$ is
 Lagrange basis $L_i(x)$ is also a basis of the vector space, and the coordinate $f_i=f(x_i)$ is called the evaluation form of $f(x)$.
 The FFT/IFFT algorithm enables the transformation of the coordinates between the two bases.
 
-Next, we will study how to calculate exact division when the divisor is a polynomial of degree 1, i.e.\ given $f(a)=0$, calculate the value of $q(x)=f(x)/(x-a)$ at the interpolation point $x_i$.
+Next, we will study how to calculate {\Update the} exact division when the divisor is a polynomial of degree 1, i.e.\ given $f(a)=0$, calculate the value of $q(x)=f(x)/(x-a)$ at the interpolation point $x_i$.
 When $x_m \ne a$, $q(x_m)=f_m/(x_m-a)$, when $x_m=a$, since the degree of $q(x)=f(x)/(x-x_m)$ is less than $n-1$, we only need $n-1$ values of interpolation points $x_0,\ldots,x_{m-1} ,x_{m+1},\ldots,x_{n-1}$ to uniquely determine $q(x)$.
 \begin{align*}
     q(x) &= \frac{f(x)}{x-x_m} \\
-    &= \sum_{i \ne m} \frac{f_i}{x_i-x_m} \prod_{j \ne i,m} \frac{x-x_j}{x_i-x_j} \\
+    &= \sum_{i \ne m} \frac{f_i}{x_i-x_m} \prod_{{\Update \substack{j \ne i \\ j \ne m}}} \frac{x-x_j}{x_i-x_j} \\
     &= \sum_{i \ne m} \frac{f_i}{x-x_m} \prod_{j \ne i} \frac{x-x_j}{x_i-x_j} \\
     &= \sum_{i \ne m} \frac{f_i}{x-x_m} L_i(x) \\
     &= \sum_{i \ne m} \frac{f_i}{x-x_m} \frac{v(x)}{v'(x)(x-x_i)} \\
@@ -32,7 +32,7 @@ Then
     &= \sum_{i \ne m} \frac{f_i}{x_m-x_i} \cdot \frac{v'(x_m)}{v'(x_i)}.
 \end{align*}
 
-For non-interpolation points $z \notin \{x_0, \ldots, x_{n-1}\}$, we can also quickly calculate its value
+For non-interpolation points $z \notin \{x_0, \ldots, x_{n-1}\}$, we can calculate its value {\Update easily}
 \begin{align*}
     f(z) = \sum_{i=0}^{n-1}f_iL_i(z)
     &= \sum_{i=0}^{n-1}\frac{v(z)f_i}{v'(z)(z-x_i)} \\
